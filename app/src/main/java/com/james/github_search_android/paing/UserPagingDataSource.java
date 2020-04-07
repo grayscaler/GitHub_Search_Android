@@ -14,7 +14,6 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.paging.PageKeyedDataSource;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -62,7 +61,7 @@ public class UserPagingDataSource extends PageKeyedDataSource<String, User.Items
                     public void accept(Throwable throwable) throws Exception {
 
                     }
-                }).dispose();
+                });
     }
 
     @Override

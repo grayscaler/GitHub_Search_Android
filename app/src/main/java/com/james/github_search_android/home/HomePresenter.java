@@ -44,6 +44,6 @@ public class HomePresenter implements HomeContract.Presenter {
                     public void accept(Throwable throwable) throws Exception {
                         Log.d(TAG, "accept: throwable:" + throwable);
                     }
-                }).dispose();
+                });
     }
 }
