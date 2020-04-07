@@ -1,7 +1,5 @@
 package com.james.github_search_android.paing;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.james.github_search_android.data.User;
 import com.james.github_search_android.data.source.remote.GitHubRemoteDataSource;
@@ -13,45 +11,43 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.paging.PageKeyedDataSource;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Response;
 
+import static com.james.github_search_android.Constants.Constants.API_PAGE_SIZE;
+import static com.james.github_search_android.Constants.Constants.API_QUERY_KEY_PAGE_SIZE;
 import static com.james.github_search_android.Constants.Constants.API_QUERY_KEY_Q;
 
 public class UserPagingDataSource extends PageKeyedDataSource<String, User.ItemsBean> {
 
-    public static final String TAG = UserPagingDataSource.class.getSimpleName();
-
     private final GitHubRemoteDataSource mGitHubRemoteDataSource;
-    private Map<String, String> options = new HashMap<>();
-    //    private String mKeyWord;
+    private Map<String, String> options;
     private final OkHttpClient mOkHttpClient;
+    private final CompositeDisposable mDisposable;
 
     public UserPagingDataSource(String keyWord) {
-        Log.d(TAG, "UserPagingDataSource: ");
         mGitHubRemoteDataSource = GitHubRemoteDataSource.getInstance();
+
+        options = new HashMap<>();
         options.put(API_QUERY_KEY_Q, keyWord);
-        //        mKeyWord = keyWord;
+        options.put(API_QUERY_KEY_PAGE_SIZE, String.valueOf(API_PAGE_SIZE));
+
         mOkHttpClient = new OkHttpClient();
+        mDisposable = new CompositeDisposable();
     }
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<String> params, @NonNull final LoadInitialCallback<String, User.ItemsBean> callback) {
-        mGitHubRemoteDataSource.rxGetUsers(options)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(Schedulers.io())
+        mDisposable.add(mGitHubRemoteDataSource.rxGetUsers(options)
                 .subscribe(new Consumer<Response<User>>() {
                     @Override
                     public void accept(Response<User> userResponse) throws Exception {
                         if (userResponse.isSuccessful()) {
                             String nextPageUrl = parseNextPageUrl(userResponse.headers());
-                            Log.d(TAG, "loadInitial: nextPageUrl:" + nextPageUrl);
-                            Log.d(TAG, "loadInitial: response.toString():" + userResponse.toString());
-                            Log.d(TAG, "loadInitial: response.body().toString():" + userResponse.body().toString());
-                            Log.d(TAG, "loadInitial: response.body().body().toString():" + userResponse.body().toString());
                             List<User.ItemsBean> users = userResponse.body().getItems();
                             callback.onResult(users, null, nextPageUrl);
                         }
@@ -61,7 +57,7 @@ public class UserPagingDataSource extends PageKeyedDataSource<String, User.Items
                     public void accept(Throwable throwable) throws Exception {
 
                     }
-                });
+                }));
     }
 
     @Override
@@ -71,8 +67,8 @@ public class UserPagingDataSource extends PageKeyedDataSource<String, User.Items
 
     @Override
     public void loadAfter(@NonNull LoadParams<String> params, @NonNull LoadCallback<String, User.ItemsBean> callback) {
+        mDisposable.clear();
         String url = params.key;
-        Log.d(TAG, "loadAfter: url:" + url);
         if (!url.isEmpty()) {
             try {
                 okhttp3.Response response = mOkHttpClient.newCall(
@@ -83,21 +79,14 @@ public class UserPagingDataSource extends PageKeyedDataSource<String, User.Items
 
                 if (response.isSuccessful()) {
                     String nextPageUrl = parseNextPageUrl(response.headers());
-                    Log.d(TAG, "loadAfter: nextPageUrl:" + nextPageUrl);
-                    Log.d(TAG, "loadAfter: response:" + new Gson().toJson(response));
-                    Log.d(TAG, "loadAfter: response.body():" + new Gson().toJson(response.body()));
-                    Log.d(TAG, "loadAfter: response.body().string():" + response.body().string());
-//                    User user = new Gson().fromJson(response.body().string(), User.class);
-//                    List<User.ItemsBean> users = user.getItems();
-                    callback.onResult(null, nextPageUrl);
-
-//                    Type listType = new TypeToken<List<User.ItemsBean>>() {
-//                    }.getType();
-//                    List<User.ItemsBean> users = new Gson().fromJson(response.body().string(), listType);
-//                    callback.onResult(users, nextPageUrl);
+                    User user = new Gson().fromJson(response.body().string(), User.class);
+                    List<User.ItemsBean> users = user.getItems();
+                    callback.onResult(users, nextPageUrl);
+                } else {
+                    // TODO: 2020-04-07 handle unsuccessful
                 }
-            } catch (IOException e) {
 
+            } catch (IOException e) {
             }
         }
     }

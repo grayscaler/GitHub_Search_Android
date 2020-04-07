@@ -7,14 +7,5 @@ import io.reactivex.Observable;
 
 public interface GitHubDataSource {
 
-//    interface GetUsersCallback {
-//
-//        void onUserLoaded(Response<User> userResponse);
-//
-//        void onDataNotAvailable(Throwable throwable);
-//    }
-
-//    void getUserResponse(String keyWord, GetUsersCallback getUsersCallback);
-
     Observable<PagedList<User.ItemsBean>> getUsersObservable();
 }

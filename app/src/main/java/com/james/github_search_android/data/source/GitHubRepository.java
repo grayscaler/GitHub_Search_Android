@@ -11,57 +11,34 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.james.github_search_android.Constants.Constants.API_PAGE_SIZE;
+import static com.james.github_search_android.Constants.Constants.API_PREFETCH_DISTANCE;
+
 public class GitHubRepository implements GitHubDataSource {
 
     private volatile static GitHubRepository INSTANCE = null;
-    private final GitHubRemoteDataSource mGitHubRemoteDataSource;
     private final UserPagingDataSourceFactory mUserPagingDataSourceFactory;
     private final PagedList.Config pagedListConfig;
 
-    private GitHubRepository(GitHubRemoteDataSource gitHubRemoteDataSource, UserPagingDataSourceFactory userPagingDataSourceFactory) {
-        mGitHubRemoteDataSource = gitHubRemoteDataSource;
+    private GitHubRepository(UserPagingDataSourceFactory userPagingDataSourceFactory) {
         mUserPagingDataSourceFactory = userPagingDataSourceFactory;
 
         pagedListConfig = new PagedList.Config.Builder()
-                .setPageSize(30)
-                .setPrefetchDistance(10)
+                .setPageSize(API_PAGE_SIZE)
+                .setPrefetchDistance(API_PREFETCH_DISTANCE)
                 .build();
     }
 
-    public static GitHubRepository getInstance(GitHubRemoteDataSource gitHubRemoteDataSource, UserPagingDataSourceFactory userPagingDataSourceFactory) {
+    public static GitHubRepository getInstance(UserPagingDataSourceFactory userPagingDataSourceFactory) {
         if (INSTANCE == null) {
             synchronized (GitHubRemoteDataSource.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new GitHubRepository(gitHubRemoteDataSource, userPagingDataSourceFactory);
+                    INSTANCE = new GitHubRepository(userPagingDataSourceFactory);
                 }
             }
         }
         return INSTANCE;
     }
-
-//    @Override
-//    public void getUserResponse(String keyWord, GetUsersCallback getUsersCallback) {
-//        getUsersFromRemoteSource(keyWord, getUsersCallback);
-//    }
-//
-//    private void getUsersFromRemoteSource(String keyWord, final GetUsersCallback getUsersCallback) {
-//        Map<String, String> options = new HashMap<>();
-//        options.put(API_QUERY_KEY_Q, keyWord);
-//        mGitHubRemoteDataSource.rxGetUsers(options)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Consumer<Response<User>>() {
-//                    @Override
-//                    public void accept(Response<User> userResponse) throws Exception {
-//                        getUsersCallback.onUserLoaded(userResponse);
-//                    }
-//                }, new Consumer<Throwable>() {
-//                    @Override
-//                    public void accept(Throwable throwable) throws Exception {
-//                        getUsersCallback.onDataNotAvailable(throwable);
-//                    }
-//                }).dispose();
-//    }
 
     @Override
     public Observable<PagedList<User.ItemsBean>> getUsersObservable() {

@@ -2,7 +2,6 @@ package com.james.github_search_android.home;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +27,6 @@ import static com.james.github_search_android.Constants.Constants.USER_ITEM_TYPE
 import static com.james.github_search_android.Constants.Constants.USER_ITEM_TYPE_3;
 
 public class HomeFragment extends Fragment implements HomeContract.View {
-
-    public static final String TAG = HomeFragment.class.getSimpleName();
 
     private HomeContract.Presenter mPresenter;
 
@@ -89,14 +86,18 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume: ");
         super.onResume();
         mPresenter.start();
     }
 
     @Override
     public void showUsers(PagedList<User.ItemsBean> users) {
-//        mUserAdapter.setUsers(users);
         mUserAdapter.submitList(users);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPresenter.clearDisposable();
     }
 }

@@ -4,14 +4,13 @@ import com.james.github_search_android.BasePresenter;
 import com.james.github_search_android.BaseView;
 import com.james.github_search_android.data.User;
 
-import java.util.List;
-
 import androidx.paging.PagedList;
 
 public interface HomeContract {
 
     interface Presenter extends BasePresenter {
 
+        void clearDisposable();
     }
 
     interface View extends BaseView<Presenter> {

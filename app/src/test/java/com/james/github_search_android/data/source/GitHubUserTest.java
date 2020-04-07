@@ -1,7 +1,5 @@
 package com.james.github_search_android.data.source;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.james.github_search_android.data.User;
@@ -29,14 +27,19 @@ import io.reactivex.internal.schedulers.ExecutorScheduler;
 import io.reactivex.plugins.RxJavaPlugins;
 import retrofit2.Response;
 
+import static com.james.github_search_android.Constants.Constants.API_PAGE_SIZE;
+import static com.james.github_search_android.Constants.Constants.API_QUERY_KEY_PAGE_SIZE;
 import static com.james.github_search_android.Constants.Constants.API_QUERY_KEY_Q;
 
 public class GitHubUserTest {
+
     private GitHubRepository mGitHubRepository;
+    private GitHubRemoteDataSource mGitHubRemoteDataSource;
 
     @Before
     public void setupGitHubRepository() {
-        mGitHubRepository = GitHubRepository.getInstance(GitHubRemoteDataSource.getInstance(), new UserPagingDataSourceFactory());
+        mGitHubRepository = GitHubRepository.getInstance(new UserPagingDataSourceFactory());
+        mGitHubRemoteDataSource = GitHubRemoteDataSource.getInstance();
     }
 
     @BeforeClass
@@ -92,36 +95,7 @@ public class GitHubUserTest {
     }
 
     @Test
-    public void getUsersFromRemoteSource() {
-//        mGitHubRepository.getUserResponse("jack", 0, new GitHubDataSource.GetUsersCallback() {
-//                @Override
-//                public void onUserLoaded(List<User.ItemsBean> users) {
-//                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//                    System.out.println(gson.toJson(users));
-//                    System.out.println(users.size());
-//                }
-//
-//                @Override
-//                public void onDataNotAvailable(Throwable throwable) {
-//                    System.out.println(throwable);
-//                }
-//            });
-
-//        try {
-//            String response = mGitHubRepository.getUserResponse("jack").execute().headers().toString();
-//            System.out.println(response);
-//            String linkPart = mGitHubRepository.getUserResponse("jack").execute()
-//                    .headers()
-//                    .get("link")
-//                    .split(",")[0]
-//                    .split(";")[0]
-//                    .trim();
-//            String nextLink = linkPart.substring(1, linkPart.length() - 1);
-//            System.out.println(nextLink);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
+    public void getUsersObservable() {
         mGitHubRepository.getUsersObservable()
                 .subscribe(new Consumer<PagedList<User.ItemsBean>>() {
                     @Override
@@ -139,16 +113,17 @@ public class GitHubUserTest {
     }
 
     @Test
-    public void getUsers() {
+    public void rxGetUsers() {
         Map<String,String> options = new HashMap<>();
         options.put(API_QUERY_KEY_Q, "jack");
-        GitHubRemoteDataSource.getInstance()
-                .rxGetUsers(options)
+        options.put(API_QUERY_KEY_PAGE_SIZE, String.valueOf(API_PAGE_SIZE));
+        mGitHubRemoteDataSource.rxGetUsers(options)
                 .subscribe(new Consumer<Response<User>>() {
                     @Override
                     public void accept(Response<User> userResponse) throws Exception {
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
                         System.out.println(gson.toJson(userResponse));
+                        System.out.println(gson.toJson(userResponse.body().getItems().size()));
                     }
                 });
     }
