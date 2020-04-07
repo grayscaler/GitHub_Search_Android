@@ -8,6 +8,7 @@ import java.util.Map;
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -45,7 +46,7 @@ public class GitHubRemoteDataSource {
         mApi = retrofit.create(GitHubRemoteDataSourceApi.class);
     }
 
-    public Observable<User> rxGetUsers(Map<String, String> options) {
+    public Observable<Response<User>> rxGetUsers(Map<String, String> options) {
         return mApi.rxGetUsers(options);
     }
 }

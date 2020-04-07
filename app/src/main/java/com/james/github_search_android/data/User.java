@@ -2,6 +2,8 @@ package com.james.github_search_android.data;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+
 public class User {
 
     /**
@@ -181,6 +183,15 @@ public class User {
 
         public void setScore(double score) {
             this.score = score;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (obj == this)
+                return true;
+
+            ItemsBean itemsBean = (ItemsBean) obj;
+            return itemsBean.id == this.id;
         }
     }
 }

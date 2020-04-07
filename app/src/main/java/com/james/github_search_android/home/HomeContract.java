@@ -6,6 +6,8 @@ import com.james.github_search_android.data.User;
 
 import java.util.List;
 
+import androidx.paging.PagedList;
+
 public interface HomeContract {
 
     interface Presenter extends BasePresenter {
@@ -14,6 +16,6 @@ public interface HomeContract {
 
     interface View extends BaseView<Presenter> {
 
-        void showUsers(List<User.ItemsBean> users);
+        void showUsers(PagedList<User.ItemsBean> users);
     }
 }

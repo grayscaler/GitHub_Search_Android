@@ -10,19 +10,18 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.james.github_search_android.R;
 import com.james.github_search_android.data.User;
-
-import java.util.List;
+import com.james.github_search_android.paing.UserDiffUtils;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class UserAdapter extends PagedListAdapter<User.ItemsBean, RecyclerView.ViewHolder> {
 
     private Context mContext;
-    private List<User.ItemsBean> mUsers;
 
-    public UserAdapter(List<User.ItemsBean> users) {
-        this.mUsers = users;
+    public UserAdapter(UserDiffUtils userDiffUtils) {
+        super(userDiffUtils);
     }
 
     @NonNull
@@ -37,24 +36,13 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        User.ItemsBean user = mUsers.get(position);
+        User.ItemsBean user = getItem(position);
         UserViewHolder userViewHolder = (UserViewHolder) holder;
 
         Glide.with(mContext)
                 .load(user.getAvatar_url())
                 .into(userViewHolder.mAvatar);
         userViewHolder.mName.setText(user.getLogin());
-    }
-
-    @Override
-    public int getItemCount() {
-        return mUsers.size();
-    }
-
-    public void setUsers(List<User.ItemsBean> users) {
-        mUsers.clear();
-        mUsers.addAll(users);
-        notifyDataSetChanged();
     }
 
     private class UserViewHolder extends RecyclerView.ViewHolder {

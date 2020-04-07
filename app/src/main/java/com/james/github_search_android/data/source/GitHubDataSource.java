@@ -2,16 +2,19 @@ package com.james.github_search_android.data.source;
 
 import com.james.github_search_android.data.User;
 
-import java.util.List;
+import androidx.paging.PagedList;
+import io.reactivex.Observable;
 
 public interface GitHubDataSource {
 
-    interface GetUsersCallback {
+//    interface GetUsersCallback {
+//
+//        void onUserLoaded(Response<User> userResponse);
+//
+//        void onDataNotAvailable(Throwable throwable);
+//    }
 
-        void onUsersLoaded(List<User.ItemsBean> users);
+//    void getUserResponse(String keyWord, GetUsersCallback getUsersCallback);
 
-        void onDataNotAvailable(Throwable throwable);
-    }
-
-    void getUsers(String keyWord, int page, GetUsersCallback getUsersCallback);
+    Observable<PagedList<User.ItemsBean>> getUsersObservable();
 }

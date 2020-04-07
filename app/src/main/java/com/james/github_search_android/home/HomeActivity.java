@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.james.github_search_android.R;
 import com.james.github_search_android.data.source.GitHubRepository;
 import com.james.github_search_android.data.source.remote.GitHubRemoteDataSource;
+import com.james.github_search_android.paing.UserPagingDataSourceFactory;
 import com.james.github_search_android.util.ActivityUtils;
 
 import androidx.appcompat.app.ActionBar;
@@ -33,6 +34,6 @@ public class HomeActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), homeFragment, R.id.contentFrame);
         }
 
-        mHomePresenter = new HomePresenter(homeFragment, GitHubRepository.getInstance(GitHubRemoteDataSource.getInstance()));
+        mHomePresenter = new HomePresenter(homeFragment, GitHubRepository.getInstance(GitHubRemoteDataSource.getInstance(), new UserPagingDataSourceFactory()));
     }
 }
