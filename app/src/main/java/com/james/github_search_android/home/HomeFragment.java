@@ -2,9 +2,14 @@ package com.james.github_search_android.home;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.james.github_search_android.R;
 import com.james.github_search_android.adapter.UserAdapter;
@@ -81,13 +86,36 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(mUserAdapter);
 
+        final EditText editText = root.findViewById(R.id.et_input);
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    // TODO: 2020-04-08 check empty
+                    hideSoftKeyboard(editText);
+                    searchUser(editText.getText().toString());
+                }
+                return false;
+            }
+        });
+
         return root;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.start();
+    private void hideSoftKeyboard(EditText editText) {
+        editText.clearFocus();
+
+        if (getActivity() != null) {
+            InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (in != null) {
+                in.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+            }
+        }
+    }
+
+    private void searchUser(String user) {
+        mPresenter.clearDisposable();
+        mPresenter.loadUsers(user);
     }
 
     @Override

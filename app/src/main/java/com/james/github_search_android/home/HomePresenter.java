@@ -24,12 +24,8 @@ public class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void start() {
-        loadUsers();
-    }
-
-    private void loadUsers() {
-        addDisposable(mGitHubRepository.getUsersObservable()
+    public void loadUsers(String userName) {
+        addDisposable(mGitHubRepository.getUsersObservable(userName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<PagedList<User.ItemsBean>>() {

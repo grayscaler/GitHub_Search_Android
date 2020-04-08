@@ -96,7 +96,7 @@ public class GitHubUserTest {
 
     @Test
     public void getUsersObservable() {
-        mGitHubRepository.getUsersObservable()
+        mGitHubRepository.getUsersObservable("jack")
                 .subscribe(new Consumer<PagedList<User.ItemsBean>>() {
                     @Override
                     public void accept(PagedList<User.ItemsBean> itemsBeans) throws Exception {

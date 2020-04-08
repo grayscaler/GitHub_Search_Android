@@ -41,7 +41,8 @@ public class GitHubRepository implements GitHubDataSource {
     }
 
     @Override
-    public Observable<PagedList<User.ItemsBean>> getUsersObservable() {
+    public Observable<PagedList<User.ItemsBean>> getUsersObservable(String userName) {
+        mUserPagingDataSourceFactory.setKeyWord(userName);
         return new RxPagedListBuilder(mUserPagingDataSourceFactory, pagedListConfig)
                 .setFetchScheduler(Schedulers.io())
                 .setNotifyScheduler(AndroidSchedulers.mainThread())

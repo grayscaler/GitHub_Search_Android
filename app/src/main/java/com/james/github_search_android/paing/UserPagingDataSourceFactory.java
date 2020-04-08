@@ -6,8 +6,14 @@ import androidx.paging.DataSource;
 
 public class UserPagingDataSourceFactory extends DataSource.Factory<String, User.ItemsBean> {
 
+    private String mKeyWord;
+
     @Override
     public DataSource<String, User.ItemsBean> create() {
-        return new UserPagingDataSource("jack");
+        return new UserPagingDataSource(mKeyWord);
+    }
+
+    public void setKeyWord(String keyWord) {
+        this.mKeyWord = keyWord;
     }
 }

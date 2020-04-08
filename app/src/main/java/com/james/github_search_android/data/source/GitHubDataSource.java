@@ -7,5 +7,5 @@ import io.reactivex.Observable;
 
 public interface GitHubDataSource {
 
-    Observable<PagedList<User.ItemsBean>> getUsersObservable();
+    Observable<PagedList<User.ItemsBean>> getUsersObservable(String userName);
 }
