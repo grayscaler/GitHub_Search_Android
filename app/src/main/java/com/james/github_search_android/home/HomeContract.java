@@ -13,10 +13,16 @@ public interface HomeContract {
         void loadUsers(String userName);
 
         void clearDisposable();
+
+        void detachPageList();
     }
 
     interface View extends BaseView<Presenter> {
 
         void showUsers(PagedList<User.ItemsBean> users);
+
+        void setRecyclerViewVisibility(int visibility);
+
+        void setProgressBarVisibility(int visibility);
     }
 }

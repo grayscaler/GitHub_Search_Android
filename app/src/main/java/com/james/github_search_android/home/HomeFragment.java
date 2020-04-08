@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.james.github_search_android.R;
@@ -37,6 +38,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     private Context mContext;
     private UserAdapter mUserAdapter;
+    RecyclerView recyclerView;
+    ProgressBar progressBar;
 
     public HomeFragment() {
     }
@@ -67,7 +70,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.home_frag, container, false);
 
-        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
+        recyclerView = root.findViewById(R.id.recycler_view);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, GRID_LAYOUT_SPAN_COUNT);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -91,13 +94,14 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    // TODO: 2020-04-08 check empty
                     hideSoftKeyboard(editText);
                     searchUser(editText.getText().toString());
                 }
                 return false;
             }
         });
+
+        progressBar = root.findViewById(R.id.progressBar);
 
         return root;
     }
@@ -115,12 +119,28 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     private void searchUser(String user) {
         mPresenter.clearDisposable();
-        mPresenter.loadUsers(user);
+        mPresenter.detachPageList();
+        if (user == null || user.trim().isEmpty()) {
+            setRecyclerViewVisibility(View.GONE);
+            setProgressBarVisibility(View.GONE);
+        } else {
+            mPresenter.loadUsers(user);
+        }
     }
 
     @Override
     public void showUsers(PagedList<User.ItemsBean> users) {
         mUserAdapter.submitList(users);
+    }
+
+    @Override
+    public void setRecyclerViewVisibility(int visibility) {
+        recyclerView.setVisibility(visibility);
+    }
+
+    @Override
+    public void setProgressBarVisibility(int visibility) {
+        progressBar.setVisibility(visibility);
     }
 
     @Override
