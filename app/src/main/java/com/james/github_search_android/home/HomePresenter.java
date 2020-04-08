@@ -19,7 +19,7 @@ public class HomePresenter implements HomeContract.Presenter {
     private final CompositeDisposable mDisposable = new CompositeDisposable();
     private PagedList<User.ItemsBean> pagedList;
 
-    HomePresenter(HomeContract.View view, GitHubRepository gitHubRepository) {
+    public HomePresenter(HomeContract.View view, GitHubRepository gitHubRepository) {
         mView = view;
         mGitHubRepository = gitHubRepository;
 

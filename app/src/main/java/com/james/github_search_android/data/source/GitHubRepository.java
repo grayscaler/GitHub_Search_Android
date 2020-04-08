@@ -5,6 +5,9 @@ import com.james.github_search_android.data.User;
 import com.james.github_search_android.data.source.remote.GitHubRemoteDataSource;
 import com.james.github_search_android.paing.UserPagingDataSourceFactory;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import androidx.paging.PagedList;
 import androidx.paging.RxPagedListBuilder;
 import io.reactivex.Observable;
@@ -14,13 +17,15 @@ import io.reactivex.schedulers.Schedulers;
 import static com.james.github_search_android.Constants.Constants.API_PAGE_SIZE;
 import static com.james.github_search_android.Constants.Constants.API_PREFETCH_DISTANCE;
 
+@Singleton
 public class GitHubRepository implements GitHubDataSource {
 
     private volatile static GitHubRepository INSTANCE = null;
     private final UserPagingDataSourceFactory mUserPagingDataSourceFactory;
     private final PagedList.Config pagedListConfig;
 
-    private GitHubRepository(UserPagingDataSourceFactory userPagingDataSourceFactory) {
+    @Inject
+    GitHubRepository(UserPagingDataSourceFactory userPagingDataSourceFactory) {
         mUserPagingDataSourceFactory = userPagingDataSourceFactory;
 
         pagedListConfig = new PagedList.Config.Builder()

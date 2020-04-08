@@ -3,9 +3,10 @@ package com.james.github_search_android.home;
 import android.os.Bundle;
 
 import com.james.github_search_android.R;
-import com.james.github_search_android.data.source.GitHubRepository;
-import com.james.github_search_android.paing.UserPagingDataSourceFactory;
+import com.james.github_search_android.di.component.DaggerHomeComponent;
 import com.james.github_search_android.util.ActivityUtils;
+
+import javax.inject.Inject;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +14,8 @@ import androidx.appcompat.widget.Toolbar;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private HomePresenter mHomePresenter;
+    @Inject
+    HomePresenter mHomePresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,9 @@ public class HomeActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), homeFragment, R.id.contentFrame);
         }
 
-        mHomePresenter = new HomePresenter(homeFragment, GitHubRepository.getInstance(new UserPagingDataSourceFactory()));
+        DaggerHomeComponent.builder()
+                .view(homeFragment)
+                .build()
+                .inject(this);
     }
 }
